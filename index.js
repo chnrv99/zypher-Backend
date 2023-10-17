@@ -41,7 +41,7 @@ app.post("/register", async (req, res) => {
             return res.status(400).json({ error: "Username already taken" });
 
         res.status(500).json({ error: "Internal server error" });
-        console.err(err);
+        console.log(err);
     }
 });
 
@@ -60,14 +60,14 @@ app.post("/login", async (req, res) => {
 });
 
 app.get("/me", authorize, (req, res) => {
-    res.json(db.prepare("SELECT username, level FROM users WHERE username = ?").get(req.username));
+    res.json(db.prepare("SELECT username, level, scene FROM users WHERE username = ?").get(req.username));
 });
 
 app.get("/question", authorize, (req, res) => {
     res.json(
         db
             .prepare(
-                "SELECT level, text, image FROM questions WHERE level = (SELECT level FROM users WHERE username = ?)"
+                "SELECT level, scene, text, image FROM questions WHERE scene = (SELECT scene FROM users WHERE username = ?)"
             )
             .get(req.username)
     );
@@ -76,25 +76,61 @@ app.get("/question", authorize, (req, res) => {
 app.post("/answer", authorize, (req, res) => {
     const { answer = "" } = req.body;
     const user = db.prepare("SELECT * FROM users WHERE username = ?").get(req.username);
-    const question = db.prepare("SELECT * FROM questions WHERE level = ?").get(user.level);
+
+    const question = db.prepare("SELECT * FROM questions WHERE scene = ?").get(user.scene);
 
     if (!question) {
         return res.json({ error: "No more questions" });
     }
 
-    db.prepare("INSERT INTO attempts (username, level, attempt) VALUES (?, ?, ?)").run(
-        user.username,
-        user.level,
-        answer
-    );
+    // db.prepare("INSERT INTO attempts (username, level, attempt) VALUES (?, ?, ?)").run(
+    //     user.username,
+    //     user.level,
+    //     answer
+    // );
 
     if (answer !== question.answer) {
         return res.json({ correct: false });
     }
 
-    db.prepare(
-        "UPDATE users SET level = level + 1, reachedAt = CURRENT_TIMESTAMP WHERE username = ?"
-    ).run(user.username);
+    // db.prepare(
+    //     "UPDATE users SET level = level + 1, reachedAt = CURRENT_TIMESTAMP WHERE username = ?"
+    // ).run(user.username);
+
+    if (user.scene === 1 && question.level === 1.1) {
+        if (user.level >= 2) {
+            pass
+        }
+        else {
+            db.prepare("UPDATE users SET level = 1.1, scene = 2, reachedAt = CURRENT_TIMESTAMP WHERE username = ?").run(user.username)
+
+        }
+    }
+    else if (user.scene === 2 && (question.level === 2.1 || question.level === 2.2)) {
+        if (user.level >= 3) {
+            pass
+        }
+        else {
+            db.prepare("UPDATE users SET level = ?, scene = 3, reachedAt = CURRENT_TIMESTAMP WHERE username = ?").run(question.level, user.username)
+
+        }
+    }
+    else if(user.scene === 3 && (question.level === 3.1 || question.level === 3.2)){
+        if(user.level >=4){
+            pass
+        }
+        else {
+            db.prepare("UPDATE users SET level = ?, scene = 4, reachedAt = CURRENT_TIMESTAMP WHERE username = ?").run(question.level, user.username)
+        }
+    }
+    else if(user.scene === 4 && (question.level === 4.1)){
+        if(user.level >=4.1){
+            pass
+        }
+        else {
+            db.prepare("UPDATE users SET level = ?, scene = 4, reachedAt = CURRENT_TIMESTAMP WHERE username = ?").run(question.level, user.username)
+        }
+    }
 
     res.json({ correct: true });
 });
@@ -106,29 +142,29 @@ const leaderboard = cacher(60)(() => leaderboardStmt.all());
 app.get("/leaderboard", (_, res) => res.json(leaderboard()));
 
 app.post("/add-question", (req, res) => {
-    if (req.query.password != process.env.ADMIN_PASSWORD) {
-        return res.status(401).json({ error: "Invalid password" });
-    }
+    // if (req.query.password != process.env.ADMIN_PASSWORD) {
+    //     return res.status(401).json({ error: "Invalid password" });
+    // }
 
-    const { level, text, image, answer } = req.body;
+    const { level, scene, text, image, answer } = req.body;
 
     res.json(
         db
             .prepare(
-                "INSERT INTO questions (level, text, image, answer) VALUES (?, ?, ?, ?) RETURNING *"
+                "INSERT INTO questions (level, scene, text, image, answer) VALUES (?, ?, ?, ?, ?) RETURNING *"
             )
-            .get(level, text, image, answer)
+            .get(level, scene, text, image, answer)
     );
 });
 
 app.post("/delete-question", (req, res) => {
-    if (req.query.password != process.env.ADMIN_PASSWORD) {
-        return res.status(401).json({ error: "Invalid password" });
-    }
+    // if (req.query.password != process.env.ADMIN_PASSWORD) {
+    //     return res.status(401).json({ error: "Invalid password" });
+    // }
 
-    const { level } = req.body;
+    const { level, scene } = req.body;
 
-    res.json(db.prepare("DELETE FROM questions WHERE level = ?").run(level));
+    res.json(db.prepare("DELETE FROM questions WHERE level = ? and scene=?").run(level, scene));
 });
 
 app.get("/all-questions", (req, res) => {
