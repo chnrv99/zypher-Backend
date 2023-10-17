@@ -6,7 +6,7 @@
 
 CREATE TABLE
     IF NOT EXISTS questions (
-        level DECIMAL(1,1) PRIMARY KEY NOT NULL,
+        level INTEGER PRIMARY KEY NOT NULL,
         scene INTEGER NOT NULL,
         text TEXT NOT NULL,
         image TEXT,
@@ -20,7 +20,7 @@ CREATE TABLE
         ),
         avatar TEXT NOT NULL,
         password TEXT NOT NULL,
-        level DECIMAL(1,1) NOT NULL DEFAULT 1,
+        level INTEGER NOT NULL DEFAULT 1,
         scene INTEGER NOT NULL DEFAULT 1,
         reachedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
