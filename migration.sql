@@ -1,13 +1,7 @@
--- so first scene only 1 challenge
--- second and third, 2 challenges
--- fourth only 1 challenge
--- for first and fourth scene, they have to complete that one challenge to advance
--- for second and third scene, they have to complete any one challenge to advance
-
 CREATE TABLE
     IF NOT EXISTS questions (
         level INTEGER PRIMARY KEY NOT NULL,
-        scene INTEGER NOT NULL,
+        scene INTEGER NOT NULL DEFAULT 1,
         text TEXT NOT NULL,
         image TEXT,
         answer TEXT NOT NULL
@@ -20,8 +14,15 @@ CREATE TABLE
         ),
         avatar TEXT NOT NULL,
         password TEXT NOT NULL,
+        member_1_name TEXT NOT NULL,
+        member_2_name TEXT NOT NULL,
+        member_3_name TEXT NOT NULL,
+        member_1_regno TEXT NOT NULL,
+        member_2_regno TEXT NOT NULL,
+        member_3_regno TEXT NOT NULL,
         level INTEGER NOT NULL DEFAULT 1,
-        scene INTEGER NOT NULL DEFAULT 1,
+        scene_reached NOT NULL DEFAULT 1,
+        answered_levels TEXT NOT NULL DEFAULT '[]',
         reachedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
 
