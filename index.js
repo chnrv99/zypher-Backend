@@ -21,6 +21,10 @@ app.use(cors('*'));
 app.set('view engine', 'ejs');
 
 
+app.get("/admin/forms", async(req,res)=>{
+    res.render('forms')
+})
+
 app.get('/admin/index', async(req,res)=>{
     let regTeamDetails = db.prepare("SELECT username, member_1_name, member_1_regno, member_2_name, member_2_regno, member_3_name, member_3_regno, answered_levels FROM users").all();
     // we will get the challenge completed users based on answered_levels
