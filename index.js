@@ -197,7 +197,7 @@ app.post("/question", authorize, (req, res) => {
     res.json(
         db
             .prepare(
-                "SELECT level, scene, hidden, text, image FROM questions WHERE level = ?"
+                "SELECT level, scene, hidden, text, url FROM questions WHERE level = ?"
             )
             .get(question_level)
     )
@@ -388,14 +388,14 @@ app.post("/add-question", (req, res) => {
     //     return res.status(401).json({ error: "Invalid password" });
     // }
 
-    const { level, scene, text, image, answer } = req.body;
+    const { level, scene, text, url, answer } = req.body;
 
     res.json(
         db
             .prepare(
-                "INSERT INTO questions (level, scene, text, image, answer) VALUES (?, ?, ?, ?, ?) RETURNING *"
+                "INSERT INTO questions (level, scene, text, url, answer) VALUES (?, ?, ?, ?, ?) RETURNING *"
             )
-            .get(level, scene, text, image, answer)
+            .get(level, scene, text, url, answer)
     );
 });
 

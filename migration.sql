@@ -4,7 +4,7 @@ CREATE TABLE
         scene INTEGER NOT NULL DEFAULT 1,
         text TEXT NOT NULL,
         hidden BOOLEAN NOT NULL DEFAULT FALSE,
-        image TEXT,
+        url TEXT,
         answer TEXT NOT NULL
     );
 
