@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "undefined/subscriptions/9719a672-3a49-4817-bfc2-4fdfd3f31e44/resourceGroups/appsvc_linux_centralus_basic/providers/Microsoft.Web/sites/zypher-backend-new",
+    "appService.deploySubpath": "."
+}
