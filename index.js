@@ -25,6 +25,8 @@ app.get("/admin/forms", async (req, res) => {
     res.render('forms')
 })
 
+const protection = 'Zypher'
+
 app.get('/admin/index', async (req, res) => {
     let regTeamDetails = db.prepare("SELECT username, member_1_name, member_1_regno, member_2_name, member_2_regno, member_3_name, member_3_regno, answered_levels FROM users").all();
     // we will get the challenge completed users based on answered_levels
@@ -101,8 +103,9 @@ app.get('/admin/index', async (req, res) => {
 })
 
 app.post("/register", async (req, res) => {
-    const { username = "", password = "", avatar = "", member_1_name, member_1_regno, member_2_name, member_2_regno, member_3_name, member_3_regno, } = req.body;
+    const { username = "", password = "", avatar = "", member_1_name, member_1_regno, member_2_name, member_2_regno, member_3_name, member_3_regno } = req.body;
     console.log(req.body);
+    
 
     try {
         // so 3 cases
@@ -164,6 +167,78 @@ app.post("/register", async (req, res) => {
         console.err(err);
     }
 });
+
+
+app.post("/registerBackend", async (req, res) => {
+    const { username = "", password = "", avatar = "", member_1_name, member_1_regno, member_2_name, member_2_regno, member_3_name, member_3_regno, protection_client } = req.body;
+    console.log(req.body);
+    if (protection_client != protection) {
+        console.log("Failed here")
+        return res.status(401).json({ error: "Invalid password" });
+    }
+
+    try {
+        // so 3 cases
+        // one case is where only one member name and regno is ther
+        // second case is where two member name and regno is there
+        // third case is where all three member name and regno is there
+        if (member_1_name && member_1_regno && member_2_name && member_2_regno && member_3_name && member_3_regno) {
+            const user = db
+                .prepare(
+                    "INSERT INTO users (username, password, avatar, member_1_name, member_1_regno, member_2_name, member_2_regno, member_3_name, member_3_regno) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING username, avatar, level"
+                )
+                .get(username, await Password.hash(password), avatar, member_1_name, member_1_regno, member_2_name, member_2_regno, member_3_name, member_3_regno);
+            console.log(user)
+            res.json(user);
+
+        }
+        else if (member_1_name && member_1_regno && member_2_name && member_2_regno) {
+            const user = db
+                .prepare(
+                    "INSERT INTO users (username, password, avatar, member_1_name, member_1_regno, member_2_name, member_2_regno) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING username, avatar, level"
+                )
+                .get(username, await Password.hash(password), avatar, member_1_name, member_1_regno, member_2_name, member_2_regno);
+            console.log(user)
+            res.json(user);
+        }
+        else if (member_1_name && member_1_regno) {
+            const user = db
+                .prepare(
+                    "INSERT INTO users (username, password, avatar, member_1_name, member_1_regno) VALUES (?, ?, ?, ?, ?) RETURNING username, avatar, level"
+                )
+                .get(username, await Password.hash(password), avatar, member_1_name, member_1_regno);
+            console.log(user)
+            res.json(user);
+        }
+        else {
+            res.status(400).json({ error: "Please enter atleast one member name and regno" });
+        }
+
+        // const user = db
+        //     .prepare(
+        //         "INSERT INTO users (username, password, avatar) VALUES (?, ?, ?) RETURNING username, avatar, level"
+        //     )
+        //     .get(username, await Password.hash(password), avatar);
+
+        // res.json(user);
+
+
+    } catch (err) {
+        if (err.code === "SQLITE_CONSTRAINT_CHECK")
+            return res.status(400).json({ error: "Username must be between 3 and 20 characters" });
+
+        if (err instanceof Password.PasswordLengthError)
+            return res.status(400).json({ error: "Password must be between 8 and 100 characters" });
+
+        if (err.code === "SQLITE_CONSTRAINT")
+            return res.status(400).json({ error: "Username already taken" });
+
+        res.status(500).json({ error: "Internal server error" });
+        console.err(err);
+    }
+});
+
+
 
 const [login, authorize] = useJwt(process.env.JWT_SECRET, "HS256", "2d");
 
@@ -428,7 +503,10 @@ app.post("/delete-team", (req, res) => {
     //     return res.status(401).json({ error: "Invalid password" });
     // }
 
-    const { username } = req.body;
+    const { username, protection_client } = req.body;
+    if (protection_client != protection) {
+        return res.status(401).json({ error: "Invalid password" });
+    }
 
     res.json(db.prepare("DELETE FROM users WHERE username = ?").run(username));
 });
@@ -449,7 +527,10 @@ app.post("/edit-username", (req, res) => {
 
 app.post("/CompleteChallengeBackend", (req, res) => {
     // this section will work only if user submits answer
-    const { username = "", question_level = "" } = req.body;
+    const { username = "", question_level = "", protection_client } = req.body;
+    if (protection_client != protection) {
+        return res.status(401).json({ error: "Invalid password" });
+    }
     const user = db.prepare("SELECT * FROM users WHERE username = ?").get(username);
     const question = db.prepare("SELECT * FROM questions WHERE level = ?").get(question_level);
     console.log("The user details are:", user)
@@ -483,7 +564,7 @@ app.post("/CompleteChallengeBackend", (req, res) => {
         currentLevels.join(","), points,
         user.username
     );
-    
+
 
     // now updating the user scene and level
     if (user.level === 1 && user.scene_reached === 1 && question.scene === 1) {

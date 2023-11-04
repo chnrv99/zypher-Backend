@@ -82,6 +82,11 @@ as 'not completed' for a challenge -->
                 <input type="text" class="form-control" id="member_3_regno" aria-describedby="member_3_regno">
                 <div id="emailHelp" class="form-text">Enter the registration number of team member 3</div>
             </div>
+            <div class="mb-3">
+                <label for="protection_1_client" class="form-label">Password</label>
+                <input type="text" class="form-control" id="protection_1_client" aria-describedby="protection_1_client">
+                <div id="emailHelp" class="form-text">Enter the passowrd to continue</div>
+            </div>
             <button type="submit" class="btn btn-primary">Submit</button>
         </form>
     </div>
@@ -97,6 +102,11 @@ as 'not completed' for a challenge -->
                 <input type="text" class="form-control" id="delete_team_username"
                     aria-describedby="delete_team_username">
                 <div id="emailHelp" class="form-text">Enter the team username of the team you want to delete</div>
+            </div>
+            <div class="mb-3">
+                <label for="protection_2_client" class="form-label">Password</label>
+                <input type="text" class="form-control" id="protection_2_client" aria-describedby="protection_2_client">
+                <div id="emailHelp" class="form-text">Enter the passowrd to continue</div>
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>
         </form>
@@ -120,6 +130,11 @@ as 'not completed' for a challenge -->
                 <label for="completed_challenge" class="form-label">Challenge</label>
                 <input type="text" class="form-control" id="completed_challenge" aria-describedby="completed_challenge">
                 <div id="emailHelp" class="form-text">Enter the challenge number</div>
+            </div>
+            <div class="mb-3">
+                <label for="protection_3_client" class="form-label">Password</label>
+                <input type="text" class="form-control" id="protection_3_client" aria-describedby="protection_3_client">
+                <div id="emailHelp" class="form-text">Enter the passowrd to continue</div>
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>
         </form>
@@ -164,6 +179,7 @@ as 'not completed' for a challenge -->
     let member_2_regno = document.getElementById('member_2_regno');
     let member_3_name = document.getElementById('member_3_name');
     let member_3_regno = document.getElementById('member_3_regno');
+    let protection_1_client = document.getElementById('protection_1_client');
     // let url = 'https://zypher-backend-new.azurewebsites.net/';
     let url = 'http://localhost:8080/';
     addTeamForm.addEventListener('submit', (e) => {
@@ -176,10 +192,11 @@ as 'not completed' for a challenge -->
             member_2_name: member_2_name.value,
             member_2_regno: member_2_regno.value,
             member_3_name: member_3_name.value,
-            member_3_regno: member_3_regno.value
+            member_3_regno: member_3_regno.value,
+            protection_client: protection_1_client.value
         }
         console.log(data);
-        fetch(url + 'register', {
+        fetch(url + 'registerBackend', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -214,7 +231,8 @@ as 'not completed' for a challenge -->
     deleteTeamForm.addEventListener('submit', (e) => {
         e.preventDefault();
         let data = {
-            username: delete_team_username.value
+            username: delete_team_username.value,
+            protection_client: protection_2_client.value
         }
         console.log(data);
         fetch('/delete-team', {
@@ -247,7 +265,8 @@ as 'not completed' for a challenge -->
         e.preventDefault();
         let data = {
             username: team_username_1.value,
-            question_level: challenge.value
+            question_level: challenge.value,
+            protection_client: protection_3_client.value
         }
         console.log(data);
         fetch('/completeChallengeBackend', {
