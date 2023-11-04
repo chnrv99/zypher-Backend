@@ -441,6 +441,11 @@ app.post("/answer", authorize, (req, res) => {
             "UPDATE users SET level = level + 1, scene_reached = 9, reachedAt = CURRENT_TIMESTAMP WHERE username = ?"
         ).run(user.username);
     }
+    else if (user.scene_reached === 9 && question.scene === 9) {
+        db.prepare(
+            "UPDATE users SET level = level + 1, scene_reached = 10, reachedAt = CURRENT_TIMESTAMP WHERE username = ?"
+        ).run(user.username);
+    }
     // this logic is for user coming back after completing the game, to climb up the leaderboard. only level is updated, scene remains same
     else if (user.scene_reached != question.scene) {
         db.prepare(
