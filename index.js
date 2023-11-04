@@ -446,12 +446,15 @@ app.post("/edit-username", (req, res) => {
 });
 
 
-app.post("/completeChallenge", authorize, (req, res) => {
+
+app.post("/CompleteChallengeBackend", (req, res) => {
     // this section will work only if user submits answer
-    const { answer = "", question_level = "", username } = req.body;
+    const { username = "", question_level = "" } = req.body;
     const user = db.prepare("SELECT * FROM users WHERE username = ?").get(username);
     const question = db.prepare("SELECT * FROM questions WHERE level = ?").get(question_level);
-
+    console.log("The user details are:", user)
+    let points = user.points;
+    points = points + question.points;
     // getting the correct levels
     const currentLevels = (user.answered_levels || "").split(",").map(Number);
 
@@ -459,28 +462,28 @@ app.post("/completeChallenge", authorize, (req, res) => {
         return res.json({ error: "No more questions" });
     }
 
-    db.prepare("INSERT INTO attempts (username, level, attempt) VALUES (?, ?, ?)").run(
-        user.username,
-        user.level,
-        answer
-    );
+    // db.prepare("INSERT INTO attempts (username, level, attempt) VALUES (?, ?, ?)").run(
+    //     user.username,
+    //     user.level,
+    //     answer
+    // );
 
 
 
-    if (answer !== question.answer) {
-        return res.json({ correct: false });
-    }
-
+    
     // adding the current level to the list of answered levels since the answer is correct
     if (!currentLevels.includes(question.level)) {
         currentLevels.push(question.level);
     }
+    else if(currentLevels.includes(question.level)){
+        return res.json({ correct: "already answered" });
+    }
     console.log(currentLevels.join(","))
-    db.prepare("UPDATE users SET answered_levels = ? WHERE username = ?").run(
-        currentLevels.join(","),
+    db.prepare("UPDATE users SET answered_levels = ?, points = ? WHERE username = ?").run(
+        currentLevels.join(","), points,
         user.username
     );
-    console.log("user details level and scene reached", user.level, user.scene_reached)
+    
 
     // now updating the user scene and level
     if (user.level === 1 && user.scene_reached === 1 && question.scene === 1) {
@@ -540,7 +543,8 @@ app.post("/completeChallenge", authorize, (req, res) => {
     // ).run(user.username);
 
     res.json({ correct: true });
-})
+});
+
 
 app.post("/edit-password", (req, res) => {
     // if (req.query.password != process.env.ADMIN_PASSWORD) {

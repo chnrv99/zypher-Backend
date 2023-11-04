@@ -25,7 +25,7 @@ as 'not completed' for a challenge -->
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="#">Home</a>
+                            <a class="nav-link active" aria-current="page" href="/admin/index">Home</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="forms/">Forms</a>
@@ -86,6 +86,8 @@ as 'not completed' for a challenge -->
         </form>
     </div>
 
+    <br>
+    <br>
     <!-- for deleting a team -->
     <div class="container">
         <h3>Delete a team from the competition</h3>
@@ -99,6 +101,10 @@ as 'not completed' for a challenge -->
             <button type="submit" class="btn btn-primary">Submit</button>
         </form>
     </div>
+
+    
+    <br>
+    <br>
 
     <!-- for adding a team as completed for a challenge -->
     <div class="container">
@@ -118,6 +124,10 @@ as 'not completed' for a challenge -->
             <button type="submit" class="btn btn-primary">Submit</button>
         </form>
     </div>
+
+    
+    <br>
+    <br>
 
     <!-- for removing a team as completed from a challenge -->
     <div class="container">
@@ -154,6 +164,8 @@ as 'not completed' for a challenge -->
     let member_2_regno = document.getElementById('member_2_regno');
     let member_3_name = document.getElementById('member_3_name');
     let member_3_regno = document.getElementById('member_3_regno');
+    // let url = 'https://zypher-backend-new.azurewebsites.net/';
+    let url = 'http://localhost:8080/';
     addTeamForm.addEventListener('submit', (e) => {
         e.preventDefault();
         let data = {
@@ -167,7 +179,7 @@ as 'not completed' for a challenge -->
             member_3_regno: member_3_regno.value
         }
         console.log(data);
-        fetch('https://zypher-backend-new.azurewebsites.net/register', {
+        fetch(url + 'register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -235,10 +247,10 @@ as 'not completed' for a challenge -->
         e.preventDefault();
         let data = {
             username: team_username_1.value,
-            level: challenge.value
+            question_level: challenge.value
         }
         console.log(data);
-        fetch('/completeChallenge', {
+        fetch('/completeChallengeBackend', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -273,7 +285,7 @@ as 'not completed' for a challenge -->
             challenge: challenge_2.value
         }
         console.log(data);
-        fetch('https://zypher-backend-new.azurewebsites.net/notCompleteChallenge', {
+        fetch('/notCompleteChallengeBackend', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
