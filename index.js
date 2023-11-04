@@ -279,11 +279,11 @@ app.post("/question", authorize, (req, res) => {
 });
 
 app.get("/special-question", authorize, (req, res) => {
-    let question1 = db.prepare("SELECT level, text, link, description, points FROM special_challenges WHERE level = 1").get();
-    let question2 = db.prepare("SELECT level, text, link, description, points FROM special_challenges WHERE level = 2").get();
-    let question3 = db.prepare("SELECT level, text, link, description, points FROM special_challenges WHERE level = 3").get();
-    let question4 = db.prepare("SELECT level, text, link, description, points FROM special_challenges WHERE level = 4").get();
-    let question5 = db.prepare("SELECT level, text, link, description, points FROM special_challenges WHERE level = 5").get();
+    let question1 = db.prepare("SELECT level, text, link, points FROM special_challenges WHERE level = 1").get();
+    let question2 = db.prepare("SELECT level, text, link, points FROM special_challenges WHERE level = 2").get();
+    let question3 = db.prepare("SELECT level, text, link, points FROM special_challenges WHERE level = 3").get();
+    let question4 = db.prepare("SELECT level, text, link, points FROM special_challenges WHERE level = 4").get();
+    let question5 = db.prepare("SELECT level, text, link, points FROM special_challenges WHERE level = 5").get();
     console.log(question4)
     res.json([question1, question2, question3, question4, question5]);
 })
@@ -314,10 +314,11 @@ app.post("/delete-special-question", (req, res) => {
 });
 
 app.post("/special-answer", authorize, (req, res) => {
-    const { answer = "", question_level = "" } = req.body.data;
-    console.log("The details are:", req.body)
+    // console.log("The details are:", req.body)
+    const { answer = "", question_level = "" } = req.body;
     const user = db.prepare("SELECT * FROM users WHERE username = ?").get(req.username);
     const question = db.prepare("SELECT * FROM special_challenges WHERE level = ?").get(question_level);
+    // console.log("User details are:", user)
     let points = user.points;
     points = points + question.points;
 
