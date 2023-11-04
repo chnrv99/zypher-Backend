@@ -173,7 +173,7 @@ as 'not completed' for a challenge -->
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(data),
-            mode: 'cors'
+            
         }).then((res) => {
             console.log(res);
             if (res.status == 200) {
@@ -205,13 +205,13 @@ as 'not completed' for a challenge -->
             username: delete_team_username.value
         }
         console.log(data);
-        fetch('https://zypher-backend-new.azurewebsites.net/deleteTeam', {
+        fetch('/delete-team', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(data),
-            mode: 'cors'
+            
         }).then((res) => {
             console.log(res);
             if (res.status == 200) {
@@ -238,13 +238,13 @@ as 'not completed' for a challenge -->
             level: challenge.value
         }
         console.log(data);
-        fetch('https://zypher-backend-new.azurewebsites.net/completeChallenge', {
+        fetch('/completeChallenge', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(data),
-            mode: 'cors'
+            
         }).then((res) => {
             console.log(res);
             if (res.status == 200) {
@@ -279,7 +279,7 @@ as 'not completed' for a challenge -->
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(data),
-            mode: 'cors'
+            
         }).then((res) => {
             console.log(res);
             if (res.status == 200) {

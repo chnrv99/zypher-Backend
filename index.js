@@ -440,7 +440,7 @@ app.post("/edit-username", (req, res) => {
 });
 
 
-app.post("/completeChallenge", (req, res) => {
+app.post("/completeChallenge", authorize, (req, res) => {
     // this section will work only if user submits answer
     const { answer = "", question_level = "" , username} = req.body;
     const user = db.prepare("SELECT * FROM users WHERE username = ?").get(username);
