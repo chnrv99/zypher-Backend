@@ -21,11 +21,11 @@ app.use(cors('*'));
 app.set('view engine', 'ejs');
 
 
-app.get("/admin/forms", async(req,res)=>{
+app.get("/admin/forms", async (req, res) => {
     res.render('forms')
 })
 
-app.get('/admin/index', async(req,res)=>{
+app.get('/admin/index', async (req, res) => {
     let regTeamDetails = db.prepare("SELECT username, member_1_name, member_1_regno, member_2_name, member_2_regno, member_3_name, member_3_regno, answered_levels FROM users").all();
     // we will get the challenge completed users based on answered_levels
     console.log(regTeamDetails)
@@ -101,7 +101,7 @@ app.get('/admin/index', async(req,res)=>{
 })
 
 app.post("/register", async (req, res) => {
-    const { username = "", password = "", avatar = "", member_1_name, member_1_regno, member_2_name, member_2_regno,member_3_name, member_3_regno, } = req.body;
+    const { username = "", password = "", avatar = "", member_1_name, member_1_regno, member_2_name, member_2_regno, member_3_name, member_3_regno, } = req.body;
     console.log(req.body);
 
     try {
@@ -109,35 +109,35 @@ app.post("/register", async (req, res) => {
         // one case is where only one member name and regno is ther
         // second case is where two member name and regno is there
         // third case is where all three member name and regno is there
-        if(member_1_name && member_1_regno && member_2_name && member_2_regno && member_3_name && member_3_regno){
+        if (member_1_name && member_1_regno && member_2_name && member_2_regno && member_3_name && member_3_regno) {
             const user = db
-            .prepare(
-                "INSERT INTO users (username, password, avatar, member_1_name, member_1_regno, member_2_name, member_2_regno, member_3_name, member_3_regno) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING username, avatar, level"
-            )
-            .get(username, await Password.hash(password), avatar, member_1_name, member_1_regno, member_2_name, member_2_regno, member_3_name, member_3_regno);
+                .prepare(
+                    "INSERT INTO users (username, password, avatar, member_1_name, member_1_regno, member_2_name, member_2_regno, member_3_name, member_3_regno) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING username, avatar, level"
+                )
+                .get(username, await Password.hash(password), avatar, member_1_name, member_1_regno, member_2_name, member_2_regno, member_3_name, member_3_regno);
             console.log(user)
             res.json(user);
-            
+
         }
-        else if(member_1_name && member_1_regno && member_2_name && member_2_regno){
+        else if (member_1_name && member_1_regno && member_2_name && member_2_regno) {
             const user = db
-            .prepare(
-                "INSERT INTO users (username, password, avatar, member_1_name, member_1_regno, member_2_name, member_2_regno) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING username, avatar, level"
-            )
-            .get(username, await Password.hash(password), avatar, member_1_name, member_1_regno, member_2_name, member_2_regno);
-            console.log(user)
-            res.json(user);
-        }
-        else if(member_1_name && member_1_regno){
-            const user = db
-            .prepare(
-                "INSERT INTO users (username, password, avatar, member_1_name, member_1_regno) VALUES (?, ?, ?, ?, ?) RETURNING username, avatar, level"
-            )
-            .get(username, await Password.hash(password), avatar, member_1_name, member_1_regno);
+                .prepare(
+                    "INSERT INTO users (username, password, avatar, member_1_name, member_1_regno, member_2_name, member_2_regno) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING username, avatar, level"
+                )
+                .get(username, await Password.hash(password), avatar, member_1_name, member_1_regno, member_2_name, member_2_regno);
             console.log(user)
             res.json(user);
         }
-        else{
+        else if (member_1_name && member_1_regno) {
+            const user = db
+                .prepare(
+                    "INSERT INTO users (username, password, avatar, member_1_name, member_1_regno) VALUES (?, ?, ?, ?, ?) RETURNING username, avatar, level"
+                )
+                .get(username, await Password.hash(password), avatar, member_1_name, member_1_regno);
+            console.log(user)
+            res.json(user);
+        }
+        else {
             res.status(400).json({ error: "Please enter atleast one member name and regno" });
         }
 
@@ -234,9 +234,9 @@ app.post("/delete-special-question", (req, res) => {
     res.json(db.prepare("DELETE FROM special_challenges WHERE level = ?").run(level));
 });
 
-app.post("/special-answer", authorize, (req, res) => {  
+app.post("/special-answer", authorize, (req, res) => {
     const { answer = "", question_level = "" } = req.body.data;
-    console.log("The details are:",req.body)
+    console.log("The details are:", req.body)
     const user = db.prepare("SELECT * FROM users WHERE username = ?").get(req.username);
     const question = db.prepare("SELECT * FROM special_challenges WHERE level = ?").get(question_level);
 
@@ -248,7 +248,7 @@ app.post("/special-answer", authorize, (req, res) => {
         return res.json({ error: "No more questions" });
     }
 
-    
+
 
     if (answer !== question.answer) {
         return res.json({ correct: false });
@@ -265,13 +265,13 @@ app.post("/special-answer", authorize, (req, res) => {
         return res.json({ correct: true });
 
     }
-    else{
-        console.log("already answered" )
+    else {
+        console.log("already answered")
         return res.json({ correct: "already answered" });
     }
-    
+
 });
-    
+
 
 
 
@@ -310,7 +310,7 @@ app.post("/answer", authorize, (req, res) => {
         user.username
     );
 
-// now updating the user scene and level
+    // now updating the user scene and level
     if (user.level === 1 && user.scene_reached === 1 && question.scene === 1) {
         db.prepare(
             "UPDATE users SET level = level + 1, scene_reached = 2, reachedAt = CURRENT_TIMESTAMP WHERE username = ?"
@@ -388,14 +388,14 @@ app.post("/add-question", (req, res) => {
     //     return res.status(401).json({ error: "Invalid password" });
     // }
 
-    const { level, scene, text, url, answer } = req.body;
+    const { level, scene, points, text, url, answer } = req.body;
 
     res.json(
         db
             .prepare(
-                "INSERT INTO questions (level, scene, text, url, answer) VALUES (?, ?, ?, ?, ?) RETURNING *"
+                "INSERT INTO questions (level, scene, points, text, url, answer) VALUES (?, ?, ?, ?, ?, ?) RETURNING *"
             )
-            .get(level, scene, text, url, answer)
+            .get(level, scene, points, text, url, answer)
     );
 });
 
@@ -442,7 +442,7 @@ app.post("/edit-username", (req, res) => {
 
 app.post("/completeChallenge", authorize, (req, res) => {
     // this section will work only if user submits answer
-    const { answer = "", question_level = "" , username} = req.body;
+    const { answer = "", question_level = "", username } = req.body;
     const user = db.prepare("SELECT * FROM users WHERE username = ?").get(username);
     const question = db.prepare("SELECT * FROM questions WHERE level = ?").get(question_level);
 
@@ -476,7 +476,7 @@ app.post("/completeChallenge", authorize, (req, res) => {
     );
     console.log("user details level and scene reached", user.level, user.scene_reached)
 
-// now updating the user scene and level
+    // now updating the user scene and level
     if (user.level === 1 && user.scene_reached === 1 && question.scene === 1) {
         db.prepare(
             "UPDATE users SET level = level + 1, scene_reached = 2, reachedAt = CURRENT_TIMESTAMP WHERE username = ?"
