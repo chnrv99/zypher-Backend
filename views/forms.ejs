@@ -310,7 +310,7 @@ as 'not completed' for a challenge -->
     let member_3_name = document.getElementById('member_3_name');
     let member_3_regno = document.getElementById('member_3_regno');
     let protection_1_client = document.getElementById('protection_1_client');
-    // let url = 'https://zypher-backend-new.azurewebsites.net/';
+    let url = 'https://zypher-backend-new.azurewebsites.net';
     // let url = 'http://localhost:8080/';
     addTeamForm.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -326,7 +326,7 @@ as 'not completed' for a challenge -->
             protection_client: protection_1_client.value
         }
         console.log(data);
-        fetch('/registerBackend', {
+        fetch(url + '/registerBackend', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -365,7 +365,7 @@ as 'not completed' for a challenge -->
             protection_client: protection_2_client.value
         }
         console.log(data);
-        fetch('/delete-team', {
+        fetch(url +'/delete-team', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -399,7 +399,7 @@ as 'not completed' for a challenge -->
             protection_client: protection_3_client.value
         }
         console.log(data);
-        fetch('/completeChallengeBackend', {
+        fetch(url +'/completeChallengeBackend', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -434,7 +434,7 @@ as 'not completed' for a challenge -->
             challenge: challenge_2.value
         }
         console.log(data);
-        fetch('/notCompleteChallengeBackend', {
+        fetch(url +'/notCompleteChallengeBackend', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -478,7 +478,7 @@ as 'not completed' for a challenge -->
             protection_client: challenge_protection_1.value
         }
         console.log(data);
-        fetch('/add-question', {
+        fetch(url +'/add-question', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -516,7 +516,7 @@ as 'not completed' for a challenge -->
             protection_client: protection_4_client.value
         }
         console.log(data);
-        fetch('/delete-question', {
+        fetch(url +'/delete-question', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -557,7 +557,7 @@ as 'not completed' for a challenge -->
             protection_client: challengeSpl_protection_1.value
         }
         console.log(data);
-        fetch('/add-special-question', {
+        fetch(url +'/add-special-question', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -594,7 +594,7 @@ as 'not completed' for a challenge -->
             protection_client: protectionSpl_2_client.value
         }
         console.log(data);
-        fetch('/delete-special-question', {
+        fetch(url +'/delete-special-question', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
