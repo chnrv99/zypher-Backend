@@ -181,7 +181,7 @@ app.post("/login", async (req, res) => {
 });
 
 app.get("/me", authorize, (req, res) => {
-    res.json(db.prepare("SELECT username, level, scene_reached, answered_levels, answered_special_challenges FROM users WHERE username = ?").get(req.username));
+    res.json(db.prepare("SELECT username, level, scene_reached, points, answered_levels, answered_special_challenges FROM users WHERE username = ?").get(req.username));
 });
 
 app.post("/question", authorize, (req, res) => {
@@ -197,7 +197,7 @@ app.post("/question", authorize, (req, res) => {
     res.json(
         db
             .prepare(
-                "SELECT level, scene, hidden, text, url FROM questions WHERE level = ?"
+                "SELECT level, scene, points, hidden, text, url FROM questions WHERE level = ?"
             )
             .get(question_level)
     )
@@ -239,6 +239,8 @@ app.post("/special-answer", authorize, (req, res) => {
     console.log("The details are:", req.body)
     const user = db.prepare("SELECT * FROM users WHERE username = ?").get(req.username);
     const question = db.prepare("SELECT * FROM special_challenges WHERE level = ?").get(question_level);
+    let points = user.points;
+    points = points + question.points;
 
     // getting the correct levels
     const currentLevels = (user.answered_special_challenges || "").split(",").map(Number);
@@ -257,10 +259,10 @@ app.post("/special-answer", authorize, (req, res) => {
     // adding the current level to the list of answered levels since the answer is correct
     if (!currentLevels.includes(question.level)) {
         currentLevels.push(question.level);
-        db.prepare("UPDATE users SET answered_special_challenges = ? WHERE username = ?").run(
-            currentLevels.join(","), user.username
+        db.prepare("UPDATE users SET answered_special_challenges = ?, points = ? WHERE username = ?").run(
+            currentLevels.join(","), points, user.username
         );
-        console.log("answer is correct")
+        console.log("answer is correct, points are: ", points)
 
         return res.json({ correct: true });
 
@@ -280,7 +282,8 @@ app.post("/answer", authorize, (req, res) => {
     const { answer = "", question_level = "" } = req.body;
     const user = db.prepare("SELECT * FROM users WHERE username = ?").get(req.username);
     const question = db.prepare("SELECT * FROM questions WHERE level = ?").get(question_level);
-
+    let points = user.points;
+    points = points + question.points;
     // getting the correct levels
     const currentLevels = (user.answered_levels || "").split(",").map(Number);
 
@@ -288,11 +291,11 @@ app.post("/answer", authorize, (req, res) => {
         return res.json({ error: "No more questions" });
     }
 
-    db.prepare("INSERT INTO attempts (username, level, attempt) VALUES (?, ?, ?)").run(
-        user.username,
-        user.level,
-        answer
-    );
+    // db.prepare("INSERT INTO attempts (username, level, attempt) VALUES (?, ?, ?)").run(
+    //     user.username,
+    //     user.level,
+    //     answer
+    // );
 
 
 
@@ -304,9 +307,12 @@ app.post("/answer", authorize, (req, res) => {
     if (!currentLevels.includes(question.level)) {
         currentLevels.push(question.level);
     }
+    else if(currentLevels.includes(question.level)){
+        return res.json({ correct: "already answered" });
+    }
     console.log(currentLevels.join(","))
-    db.prepare("UPDATE users SET answered_levels = ? WHERE username = ?").run(
-        currentLevels.join(","),
+    db.prepare("UPDATE users SET answered_levels = ?, points = ? WHERE username = ?").run(
+        currentLevels.join(","), points,
         user.username
     );
 
