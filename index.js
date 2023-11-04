@@ -279,24 +279,28 @@ app.post("/question", authorize, (req, res) => {
 });
 
 app.get("/special-question", authorize, (req, res) => {
-    let question1 = db.prepare("SELECT level, text, link, description FROM special_challenges WHERE level = 1").get();
-    let question2 = db.prepare("SELECT level, text, link, description FROM special_challenges WHERE level = 2").get();
-    let question3 = db.prepare("SELECT level, text, link, description FROM special_challenges WHERE level = 3").get();
-    let question4 = db.prepare("SELECT level, text, link, description FROM special_challenges WHERE level = 4").get();
-    let question5 = db.prepare("SELECT level, text, link, description FROM special_challenges WHERE level = 5").get();
+    let question1 = db.prepare("SELECT level, text, link, description, points FROM special_challenges WHERE level = 1").get();
+    let question2 = db.prepare("SELECT level, text, link, description, points FROM special_challenges WHERE level = 2").get();
+    let question3 = db.prepare("SELECT level, text, link, description, points FROM special_challenges WHERE level = 3").get();
+    let question4 = db.prepare("SELECT level, text, link, description, points FROM special_challenges WHERE level = 4").get();
+    let question5 = db.prepare("SELECT level, text, link, description, points FROM special_challenges WHERE level = 5").get();
     console.log(question4)
     res.json([question1, question2, question3, question4, question5]);
 })
 
 app.post("/add-special-question", (req, res) => {
-    let { level, text, link, description, answer } = req.body;
+    let { level, text, url, points, answer, protection_client } = req.body;
+    if (protection_client != protection) {
+        return res.status(401).json({ error: "Invalid password" });
+    }
+    let link = url
     console.log(req.body)
     res.json(
         db
             .prepare(
-                "INSERT INTO special_challenges (level, text, link,description, answer) VALUES (?, ?, ?,?, ?) RETURNING *"
+                "INSERT INTO special_challenges (level, text, link, points, answer) VALUES (?, ?,?,?, ?) RETURNING *"
             )
-            .get(level, text, link, description, answer)
+            .get(level, text, link, points, answer)
     );
 });
 
@@ -469,8 +473,10 @@ app.post("/add-question", (req, res) => {
     //     return res.status(401).json({ error: "Invalid password" });
     // }
 
-    const { level, scene, points, text, url, answer } = req.body;
-
+    const { level, scene, points, text, url, answer, protection_client } = req.body;
+    if (protection_client != protection) {
+        return res.status(401).json({ error: "Invalid password" });
+    }
     res.json(
         db
             .prepare(
@@ -485,7 +491,11 @@ app.post("/delete-question", (req, res) => {
     //     return res.status(401).json({ error: "Invalid password" });
     // }
 
-    const { level } = req.body;
+
+    const { level, protection_client } = req.body;
+    if (protection_client != protection) {
+        return res.status(401).json({ error: "Invalid password" });
+    }
 
     res.json(db.prepare("DELETE FROM questions WHERE level = ?").run(level));
 });

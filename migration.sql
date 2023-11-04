@@ -13,7 +13,6 @@ CREATE TABLE
     IF NOT EXISTS special_challenges (
         level INTEGER PRIMARY KEY NOT NULL,
         text TEXT NOT NULL,
-        description TEXT NOT NULL,
         link TEXT,
         points INTEGER NOT NULL DEFAULT 0,
         answer TEXT NOT NULL
