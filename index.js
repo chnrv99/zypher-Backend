@@ -383,7 +383,7 @@ const leaderboard = cacher(60)(() => leaderboardStmt.all());
 // app.get("/leaderboard", (_, res) => res.json(leaderboard()));
 
 app.get('/leaderboard', (req, res) => {
-    const data = db.prepare("SELECT username, level FROM users ORDER BY level DESC, reachedAt ASC").all();
+    const data = db.prepare("SELECT username, points FROM users ORDER BY points DESC, reachedAt ASC").all();
     res.json(data);
 
 })
