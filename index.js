@@ -17,7 +17,13 @@ app.use(morgan(nginxFormat));
 const db = createDatabase("paradox.sqlite3");
 
 app.use(Express.json());
-app.use(cors('*'));
+// app.use(cors('*'));
+// cors for zypher.cyscomvit.com
+app.use(cors({
+    origin: 'https://zypher.cyscomvit.com',
+    optionsSuccessStatus: 200
+}));
+
 app.set('view engine', 'ejs');
 
 
@@ -105,7 +111,7 @@ app.get('/k3qfqzo0hgde2lgfblgwm45pp/index', async (req, res) => {
 app.post("/register", async (req, res) => {
     const { username = "", password = "", avatar = "", member_1_name, member_1_regno, member_2_name, member_2_regno, member_3_name, member_3_regno } = req.body;
     console.log(req.body);
-    
+
 
     try {
         // so 3 cases
@@ -387,7 +393,7 @@ app.post("/answer", authorize, (req, res) => {
     if (!currentLevels.includes(question.level)) {
         currentLevels.push(question.level);
     }
-    else if(currentLevels.includes(question.level)){
+    else if (currentLevels.includes(question.level)) {
         return res.json({ correct: "already answered" });
     }
     console.log(currentLevels.join(","))
@@ -567,12 +573,12 @@ app.post("/CompleteChallengeBackend", (req, res) => {
 
 
 
-    
+
     // adding the current level to the list of answered levels since the answer is correct
     if (!currentLevels.includes(question.level)) {
         currentLevels.push(question.level);
     }
-    else if(currentLevels.includes(question.level)){
+    else if (currentLevels.includes(question.level)) {
         return res.json({ correct: "already answered" });
     }
     console.log(currentLevels.join(","))
