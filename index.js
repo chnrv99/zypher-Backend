@@ -31,7 +31,7 @@ app.get("/k3qfqzo0hgde2lgfblgwm45pp/forms", async (req, res) => {
     res.render('forms')
 })
 
-const protection = 'Zypher'
+const protection = 'Zypher$202'
 
 app.get('/k3qfqzo0hgde2lgfblgwm45pp/index', async (req, res) => {
     let regTeamDetails = db.prepare("SELECT username, member_1_name, member_1_regno, member_2_name, member_2_regno, member_3_name, member_3_regno, answered_levels FROM users").all();
