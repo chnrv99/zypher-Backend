@@ -17,12 +17,12 @@ app.use(morgan(nginxFormat));
 const db = createDatabase("paradox.sqlite3");
 
 app.use(Express.json());
-// app.use(cors('*'));
+app.use(cors('*'));
 // cors for zypher.cyscomvit.com
-app.use(cors({
-    origin: 'https://zypher.cyscomvit.com',
-    optionsSuccessStatus: 200
-}));
+// app.use(cors({
+//     origin: 'https://zypher.cyscomvit.com',
+//     optionsSuccessStatus: 200
+// }));
 
 app.set('view engine', 'ejs');
 
@@ -262,7 +262,9 @@ app.post("/login", async (req, res) => {
 });
 
 app.get("/me", authorize, (req, res) => {
-    res.json(db.prepare("SELECT username, level, scene_reached, points, answered_levels, answered_special_challenges FROM users WHERE username = ?").get(req.username));
+    let data = db.prepare("SELECT username, level, scene_reached, points, answered_levels, answered_special_challenges FROM users WHERE username = ?").get(req.username);
+    console.log(data.answered_levels)
+    res.json(data);
 });
 
 app.post("/question", authorize, (req, res) => {
