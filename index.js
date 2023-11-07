@@ -14,7 +14,7 @@ const nginxFormat =
 
 app.use(morgan(nginxFormat));
 
-const db = createDatabase("paradox.sqlite3");
+const db = createDatabase("zypher.sqlite3");
 
 app.use(Express.json());
 app.use(cors('*'));
